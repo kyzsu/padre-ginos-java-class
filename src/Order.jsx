@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Pizza from "./Pizza";
+import Cart from "./Cart";
 
 // intl untuk format angka menjadi bentuk currency.
 const intl = new Intl.NumberFormat("en-US", {
@@ -16,6 +17,25 @@ export default function Order() {
   const [pizzaTypes, setPizzaTypes] = useState([]);
   // melacak status loading.
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState([]);
+
+  async function checkout() {
+    setLoading(true);
+
+    // fetch
+    await fetch("/api/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cart,
+      }),
+    });
+
+    setCart([]);
+    setLoading(false);
+  }
 
   let price, selectedPizza;
   if (!loading) {
@@ -43,7 +63,12 @@ export default function Order() {
   return (
     <div className="order">
       <h2>Create Order</h2>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          setCart([...cart, { pizza: selectedPizza, size: pizzaSize, price }]);
+        }}
+      >
         <div>
           <div>
             <label htmlFor="pizzaType">Pizza Type:</label>
@@ -112,6 +137,11 @@ export default function Order() {
           </div>
         )}
       </form>
+      {loading ? (
+        <h2>Sedang memuat...</h2>
+      ) : (
+        <Cart cart={cart} checkout={checkout} />
+      )}
     </div>
   );
 }
