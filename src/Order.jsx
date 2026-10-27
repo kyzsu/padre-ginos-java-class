@@ -1,11 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Pizza from "./Pizza";
+
+// intl untuk format angka menjadi bentuk currency.
+const intl = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+});
 
 export default function Order() {
   // hook itu ada: useState, useEffect, useRef, useLayoutEffect, use lain-lainnya.
   // useState return dua hal: contohnya: pizzaType (index ke-0) itu adalah value dari useState tersebut, sedangkan setPizzaType (index ke-1) merupakan fungsi untuk mengubah valuenya.
   const [pizzaType, setPizzaType] = useState("pepperoni");
   const [pizzaSize, setPizzaSize] = useState("S");
+  // tambah dua state: pizzaTypes untuk menyimpan hasil fetch pizza dari API
+  const [pizzaTypes, setPizzaTypes] = useState([]);
+  // melacak status loading.
+  const [loading, setLoading] = useState(true);
+
+  let price, selectedPizza;
+  if (!loading) {
+    selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
+    price = intl.format(
+      selectedPizza.sizes ? selectedPizza.sizes[pizzaSize] : "",
+    );
+  }
+
+  // useEffect ini menerima dua argumen, yaitu callback/fn dan dependencyList. Callback berisi fungsi ataupun hal yang ingin di lakukan saat halaman selesai di render dan jika ada variable didalam depList. Kalo deplist, itu merupakan list yang mengtrigger untuk menjalankan fungsi dalam callbacknya. Kalau arraynya kosong, maka dia akan dijalan sekali, saat halaman selesai di-render pertama kalinya. Kalau depListnya tidak disertakan, maka dia akan berjalan indefinitely.
+  useEffect(() => {
+    fetchPizzaTypes();
+  }, []);
+
+  async function fetchPizzaTypes() {
+    // delayer artifisial, akan dihapus kedepannya
+    await new Promise((res) => setTimeout(res, 3000));
+
+    const response = await fetch("/api/pizzas");
+    const parsedJson = await response.json();
+    setPizzaTypes(parsedJson);
+    setLoading(false);
+  }
 
   return (
     <div className="order">
@@ -19,9 +52,11 @@ export default function Order() {
               onChange={(e) => setPizzaType(e.target.value)}
               value={pizzaType}
             >
-              <option value="pepperoni">Pepperoni</option>
-              <option value="hawaiian">Hawaiian</option>
-              <option value="big_meat">Meat Lovers</option>
+              {pizzaTypes.map((pizza) => (
+                <option key={pizza.id} value={pizza.id}>
+                  {pizza.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -64,14 +99,18 @@ export default function Order() {
           </div>
           <button type="submit">Add to cart</button>
         </div>
-        <div className="order-pizza">
-          <Pizza
-            name="Pepperoni"
-            description="menyusul"
-            image="/public/pizzas/pepperoni.webp"
-          />
-          <p>$6.9</p>
-        </div>
+        {loading ? (
+          <h3>Sedang memuat...</h3>
+        ) : (
+          <div className="order-pizza">
+            <Pizza
+              name={selectedPizza.name}
+              description={selectedPizza.description}
+              image={selectedPizza.image}
+            />
+            <p>{price}</p>
+          </div>
+        )}
       </form>
     </div>
   );
