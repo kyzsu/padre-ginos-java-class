@@ -1,9 +1,10 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { CartContext } from "../contexts";
 import Header from "../Header";
 import PizzaOfTheDay from "../PizzaOfTheDay";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 // createRootRoute itu route paling atas, jadi layout di sini dipakai oleh semua halaman.
 export const Route = createRootRoute({
@@ -28,6 +29,7 @@ export const Route = createRootRoute({
 
         {/* Devtools cuma alat bantu debugging routing saat development */}
         <TanStackRouterDevtools />
+        <ReactQueryDevtools />
       </>
     );
   },

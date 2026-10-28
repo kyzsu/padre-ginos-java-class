@@ -2,6 +2,7 @@ import js from "@eslint/js";
 import globals from "globals";
 import prettier from "eslint-config-prettier";
 import reactPlugin from "eslint-plugin-react";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
 // tujuan dari eslint.config.mjs adalah untuk mengatur konfigurasi ESLint, sebuah alat yang digunakan untuk menganalisis kode JavaScript dan menemukan masalah potensial. Konfigurasi ini menggabungkan beberapa pengaturan, termasuk aturan yang direkomendasikan oleh ESLint, pengaturan untuk file JavaScript, dan integrasi dengan Prettier untuk memastikan konsistensi format kode. Dengan konfigurasi ini, pengembang dapat menjaga kualitas kode mereka dan mengikuti praktik terbaik dalam pengembangan JavaScript.
 /** @type {import('eslint').Linter.Config} */
@@ -12,6 +13,7 @@ export default [
     settings: { react: { version: "detect" } },
   },
   reactPlugin.configs.flat["jsx-runtime"],
+  ...pluginQuery.configs["flat/recommended"],
   {
     files: ["**/*.js", "**/*.jsx"],
     languageOptions: {
