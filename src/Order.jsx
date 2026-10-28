@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import Pizza from "./Pizza";
 import Cart from "./Cart";
+import { CartContext } from "./contexts";
 
 // intl untuk format angka menjadi bentuk currency.
 const intl = new Intl.NumberFormat("en-US", {
@@ -17,7 +18,7 @@ export default function Order() {
   const [pizzaTypes, setPizzaTypes] = useState([]);
   // melacak status loading.
   const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useContext(CartContext);
 
   async function checkout() {
     setLoading(true);
