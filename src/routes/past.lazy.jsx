@@ -4,6 +4,7 @@ import { useState } from "react";
 import getPastOrders from "../api/getPastOrders";
 import getPastOrder from "../api/getPastOrder";
 import Modal from "../Modal";
+import ErrorBoundary from "../ErrorBoundary";
 
 const intl = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -11,11 +12,21 @@ const intl = new Intl.NumberFormat("en-US", {
 });
 
 export const Route = createLazyFileRoute("/past")({
-  component: PastOrdersRoute,
+  component: ErrorBoundaryWrappedPastOrdersRoute,
 });
+
+function ErrorBoundaryWrappedPastOrdersRoute() {
+  return (
+    <ErrorBoundary>
+      <PastOrdersRoute />
+    </ErrorBoundary>
+  );
+}
 
 function PastOrdersRoute() {
   const [focusedOrder, setFocusedOrder] = useState();
+
+  // throw new Error("");
 
   // state untuk menyimpan halaman yang sedang dibuka, dimulai dari halaman 1.
   // page (index ke-0) itu value-nya, setPage (index ke-1) fungsi untuk mengubahnya.
